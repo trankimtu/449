@@ -31,17 +31,17 @@ def all_posts():
     return list(all_posts)
 
 @app.route('/posts/<int:PostID>', methods=['GET'])
-def post(PostID):
+def post_ID(PostID):
     post = queries.post_by_id(PostID=PostID)
     if post:
         return post
     else:
         raise exceptions.NotFound()
 @app.route('/posts', methods=['GET', 'POST'])
-def posts():
+def n_recent_posts():
     if request.method == 'GET':
         n = request.args.get('n', 5)
-        post = queries.post_by_any_community(n=n)
+        post = queries.n_post_by_time(n=n)
         if post:
             return list(post)
         else:
@@ -139,8 +139,8 @@ def delete(PostID):
 # List the n most recent posts to a particular community
 
 @app.route('/posts/<string:Community>', methods=['GET'])
-def post_particular_community(Community):
-    n = request.args.get('n', 5)
+def post_by_community(Community):
+    n = request.args.get('n',3)
     post = queries.post_by_community(Community=Community,n=n)
     if post:
         return list(post)
@@ -150,14 +150,7 @@ def post_particular_community(Community):
 
 
 
-# List the n most recent posts to a any community
 
-# @app.route('/posts', methods=['GET'])
-# def post_any_community():
-#     n = request.args.get('n')
-#     post = queries.post_by_any_community(n=n)
-#     if post:
-#         return list(post)
-#     else:
-#         raise exceptions.NotFound()
 
+# http://localhost:5000/posts?n=10
+# http://localhost:5000/posts/Community_3?n=3
