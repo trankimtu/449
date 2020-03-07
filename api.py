@@ -112,7 +112,7 @@ def filter_posts(query_parameters):
     
 
 
-@app.route('/delete/<int:PostID>', methods=['GET', 'DELETE'])
+@app.route('/posts/delete/<int:PostID>', methods=['GET', 'DELETE'])
 def delete(PostID):
     if request.method == 'DELETE':
         delquery = queries.delete_by_id(PostID=PostID)
