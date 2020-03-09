@@ -556,7 +556,7 @@ def main():
         
     print('Test Result: \n'.upper())
 
-    if isPassed1 == True and isPassed2 == False:
+    if isPassed1 == True and isPassed2 == False and len(myDB_Before_Del)-len(myDB_After_Del) == 1:
         print ('Test Delete is SUCCESSFUL!\n')
     else:
         print(f'Test Delete is FAILURE!')
