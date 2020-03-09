@@ -387,9 +387,6 @@ def main():
 
 
 
-
-
-
     
     # ============================================
     # 3. TEST GET n POST BY TIME
@@ -565,52 +562,5 @@ def main():
         print(f'Test Delete is FAILURE!')
 
 
-
-
-
-
-
-
-
-
-    # case_Delete(10)
-    # ============================================
-    # ============================================
-
-
-
-
-
-    # case_Get_Posts_By_Community('Community_2', 2)
-    # case_n_Posts_By_Time(4)
-    # case_Post()
-    # case_Delete(10)
-
 main()
-
-
-
-# >>> now = datetime.datetime.now()
-# >>> today8am = now.replace(hour=8, minute=0, second=0, microsecond=0)
-# >>> now < today8am
-# True
-# >>> now == today8am
-# False
-# >>> now > today8am
-# False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
