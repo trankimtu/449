@@ -104,7 +104,7 @@ test_post_by_community('Community_2', 2)
 
 # ===================================
 
-def test_n_recent_post(n):
+def test_n_post_by_time(n):
 
     print()
     print('*'*50)
@@ -136,7 +136,7 @@ def test_n_recent_post(n):
         print ('Get Data at index {PostID} DOES NOT work! or Data DOES NOT EXIST')
 
 
-test_n_recent_post(4)
+def test_n_post_by_time(4)
 
 
 

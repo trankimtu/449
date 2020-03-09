@@ -1,4 +1,5 @@
 import requests
+import time
 import datetime
 # ===================================
 
@@ -6,7 +7,7 @@ import datetime
 
 # ===================================
 
-def case_Get_All():
+def case_Get_All_Posts():
     
     resp = requests.get('http://127.0.0.1:5000/posts/all')
     
@@ -23,7 +24,7 @@ def case_Get_All():
 
 # ===================================
 
-def case_Get_ID(PostID):
+def case_Get_Post_By_ID(PostID):
    
 
     URL = 'http://localhost:5000/posts/' + f'{PostID}'
@@ -43,41 +44,7 @@ def case_Get_ID(PostID):
 
 # ===================================
 
-
-# def test_post_by_community(community, n):
-
-#     print()
-#     print('*'*50)
-#     print(f'Test {n} recent posts by the {community}')
-#     print('*'*50)
-#     print()
-    
-#     # http://localhost:5000/posts/Community_3?n=3
-#     URL = r"http://localhost:5000/posts/" + f'{community}?n={n}'
-
-#     resp = requests.get(URL)
-    
-#     if resp.status_code == 200:
-
-        
-#         obj = resp.json()
-#         length = len(obj)
-#         print(f'The list has {length} Posts.\n')
-
-#         print("Posts: \n")
-#         for i in obj:
-#             print(i)
-#             print()
-
-#         print (f'Test {n} recent posts by the {community} SUCCESS')
-#         return True
-#     else:
-#         print (F'Test {n} recent posts by the {community} IS FAILURE or Data DOES NOT EXIST')
-#         return False
-#     print()
-
-
-def test_post_by_community(community, n):
+def case_Get_Posts_By_Community(community, n):
     
     # http://localhost:5000/posts/Community_3?n=3
 
@@ -100,38 +67,22 @@ def test_post_by_community(community, n):
 
 # ===================================
 
-def test_n_post_by_time(n):
-
-    print()
-    print('*'*50)
-    print(f'List the most {n} recent posts')
-    # print('get Post at PostID = '.upper() + f'{PostID}')
-    print('*'*50)
-    print()
-
+def case_n_Posts_By_Time(n):
 
     # http://localhost:5000/posts?n=10
 
     URL = 'http://localhost:5000/posts?n=' + f'{n}'
     # print(URL)
     resp = requests.get(URL)
+    # print('resp = ', resp)
     
     if resp.status_code == 200:
                 
         obj = resp.json()
-        length = len(obj)
-        print(f'The list has {length} Posts.\n')
 
-        print("Posts: \n")
-        for i in obj:
-            print(i)
-            print()
-
-        print (f'Test list of {n} recent posts SUCCESS!')
-        return True
+        return True, obj
     else:
-        print ('Test Get Data at index {PostID} FAILURE or Data DOES NOT EXIST')
-        return False
+        return False, -1
 
     print()
 
@@ -186,170 +137,184 @@ def case_Delete(DelID):
         return False
 
 
-
 # case_Get_Al()
-# case_Get_ID(5)
-# test_post_by_community('Community_2', 2)
-# test_n_post_by_time(4)
+# case_Get_Post_By_ID(5)
+# case_Get_Posts_By_Community('Community_2', 2)
+# case_n_Posts_By_Time(4)
 # case_Post()
 # case_Delete(10)
+
+
+def addPosts():
+    
+    addData = [
+        {
+            "Username"      : "User 10",
+            "PostTitle"     : "Post Title 10",
+            "Content"       : "Content 10",
+            "Community"     : "Community_1",
+            "URLResource"   : "www.URLResource10.com"
+        },
+        {
+            "Username"      : "User 11",
+            "PostTitle"     : "Post Title 11",
+            "Content"       : "Content 11",
+            "Community"     : "Community_2",
+            "URLResource"   : "www.URLResource11.com"
+        },  
+        {
+            "Username"      : "User 12",
+            "PostTitle"     : "Post Title 12",
+            "Content"       : "Content 12",
+            "Community"     : "Community_3",
+            "URLResource"   : "www.URLResource12.com"
+        },  
+        {
+            "Username"      : "User 13",
+            "PostTitle"     : "Post Title 13",
+            "Content"       : "Content 13",
+            "Community"     : "Community_1",
+            "URLResource"   : "www.URLResource13.com"
+        },
+        {
+            "Username"      : "User 14",
+            "PostTitle"     : "Post Title 14",
+            "Content"       : "Content 14",
+            "Community"     : "Community_2",
+            "URLResource"   : "www.URLResource14.com"
+        },  
+        {
+            "Username"      : "User 15",
+            "PostTitle"     : "Post Title 15",
+            "Content"       : "Content 15",
+            "Community"     : "Community_3",
+            "URLResource"   : "www.URLResource15.com"
+        },  
+        {
+            "Username"      : "User 16",
+            "PostTitle"     : "Post Title 16",
+            "Content"       : "Content 16",
+            "Community"     : "Community_1",
+            "URLResource"   : "www.URLResource16.com"
+        },
+        {
+            "Username"      : "User 17",
+            "PostTitle"     : "Post Title 17",
+            "Content"       : "Content 17",
+            "Community"     : "Community_2",
+            "URLResource"   : "www.URLResource17.com"
+        },  
+        {
+            "Username"      : "User 18",
+            "PostTitle"     : "Post Title 18",
+            "Content"       : "Content 18",
+            "Community"     : "Community_3",
+            "URLResource"   : "www.URLResource18.com"
+        },  
+        {
+            "Username"      : "User 19",
+            "PostTitle"     : "Post Title 19",
+            "Content"       : "Content 19",
+            "Community"     : "Community_1",
+            "URLResource"   : "www.URLResource19.com"
+        } 
+    ]
+    for i in addData:
+        isPassed, resp = case_Post(**i)
+        # print(genData[i])
+        time.sleep(1)
+
+    return isPassed, resp
+
+
+
+
 
 
 
 
 def main():
-    myDB = [
-        {
-            "PostID": 1,
-            "Username": "User 1",
-            "PostTitle": "Post Title 1",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 1",
-            "Community": "Community_1",
-            "URLResource": "www.URLResource1.com"
-        },
-        {
-            "PostID": 2,
-            "Username": "User 2",
-            "PostTitle": "Post Title 2",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 2",
-            "Community": "Community_1",
-            "URLResource": "www.URLResource2.com"
-        },
-        {
-            "PostID": 3,
-            "Username": "User 3",
-            "PostTitle": "Post Title 3",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 3",
-            "Community": "Community_1",
-            "URLResource": "www.URLResource3.com"
-        },
-        {
-            "PostID": 4,
-            "Username": "User 4",
-            "PostTitle": "Post Title 4",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 4",
-            "Community": "Community_2",
-            "URLResource": "www.URLResource4.com"
-        },
-        {
-            "PostID": 5,
-            "Username": "User 5",
-            "PostTitle": "Post Title 5",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 5",
-            "Community": "Community_2",
-            "URLResource": "www.URLResource5.com"
-        },
-        {
-            "PostID": 6,
-            "Username": "User 6",
-            "PostTitle": "Post Title 6",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 6",
-            "Community": "Community_2",
-            "URLResource": "www.URLResource6.com"
-        },
-        {
-            "PostID": 7,
-            "Username": "User 7",
-            "PostTitle": "Post Title 7",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 7",
-            "Community": "Community_3",
-            "URLResource": "www.URLResource7.com"
-        },
-        {
-            "PostID": 8,
-            "Username": "User 8",
-            "PostTitle": "Post Title 8",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 8",
-            "Community": "Community_3",
-            "URLResource": "www.URLResource8.com"
-        },
-        {
-            "PostID": 9,
-            "Username": "User 9",
-            "PostTitle": "Post Title 9",
-            "PostDate": "2020-03-07 08:45:50",
-            "Content": "Content 9",
-            "Community": "Community_3",
-            "URLResource": "www.URLResource9.com"
-        }
-    ]
+    # delete all Posts from 10 to 19 if exists
+    # These item will be add later by different time
+    DelID = 10
+    # while DelID <= 19:
+    #     isPassed1 = case_Delete(DelID)
+    #     DelID += 1
 
+
+
+
+    # add posts from 10 to 19  
+    isPassed, resp = addPosts()
+    
     # ============================================
     # 1. TEST GET ALL POST 
     # ============================================
 
-    print()
-    print('*'*50)
-    print('1. Test get all post'.upper())
-    print('*'*50)
-    print()
+    # print()
+    # print('*'*50)
+    # print('1. Test get all post'.upper())
+    # print('*'*50)
+    # print()
 
+    isPassed, myDB = case_Get_All_Posts()
+    
 
-    # Process the correct result from database
-    print('Correct result from database:\n')
-    print(f'Length = {len(myDB)}\n')
-    print('Post:\n')
-    for i in myDB:
-        print(f'{i}\n')
+    # # Process the correct result from database
+    # print('Correct result from database:\n')
+    # print(f'Length = {len(myDB)}\n')
+    # print('Post:\n')
+    # for i in myDB:
+    #     print(f'{i}\n')
 
-    print('-'*10 + '\n') # ------------------------
+    # print('-'*10 + '\n') # ------------------------
 
-    # Process result from the website
-    isPassed, AllPost = case_Get_All()
+    # # Process result from the website
 
-    print('Result from test case\n')
-    print(f'Length of test case = {len(AllPost)}\n')
-    print('Post:\n')
-    for i in AllPost:
-        print(f'{i}\n')
+    # print('Result from test case\n')
+    # print(f'Length of test case = {len(AllPost)}\n')
+    # print('Post:\n')
+    # for i in AllPost:
+    #     print(f'{i}\n')
 
-    print('-'*10 + '\n') # ------------------------
-    print('Test Result: \n'.upper())
+    # print('-'*10 + '\n') # ------------------------
+    # print('Test Result: \n'.upper())
 
-    if isPassed and AllPost == myDB:
-        print ('Test Get All Posts SUCCESS!\n')
+    # if isPassed and AllPost == myDB:
+    #     print ('Test Get All Posts SUCCESS!\n')
         
-    else:
-        print('Test Get All Posts is FAILURE!')
+    # else:
+    #     print('Test Get All Posts is FAILURE!')
 
     # ============================================
-    # 2. TEST GET POST AT PostID
+    # 1. TEST GET POST AT PostID
     # ============================================
 
-    DelID = 5
+    DelID = 17
 
     print()
     print('*'*50)
-    print(f'2. Test get Post at PostID = {DelID}')
+    print(f'1. Test get Post at PostID = {DelID}')
     print('*'*50)
     print()
 
     # Process the correct result from database
-    Answer = []
+    Answer1 = []
 
     for i in myDB:
         if i['PostID'] == DelID:
-            Answer.append(i)
+            Answer1.append(i)
 
     print('Correct result from database:\n')
-    print(f'Length = {len(Answer)}\n')
+    print(f'Length = {len(Answer1)}\n')
     print('Post:\n')
-    print(f'{Answer}\n')
+    print(f'{Answer1}\n')
 
     print('-'*10 + '\n') # ------------------------
 
 
     # Process result from the website
-    isPassed, postByID = case_Get_ID(DelID)
-
+    isPassed, postByID = case_Get_Post_By_ID(DelID)
     if isPassed and (postByID in myDB):
         
         length = 1
@@ -360,100 +325,142 @@ def main():
 
         print('-'*10 + '\n') # ------------------------
         print('Test Result:\n'.upper())
-        print ('Test Get Posts by ID is SUCCESS!\n')
+        print ('Test Get Posts by ID is SUCCESSFUL!\n')
     else:
         print(f'Test Posts at PostID = {DelID} is FAILURE!')
 
+
+
     # ============================================
-    # 3. TEST GET n RECENT POST BY THE COMMUNITY
+    # 2. TEST GET n RECENT POST BY THE COMMUNITY
     # ============================================
 
     myCommunity = 'Community_2'
-    n = 2
+    n = 3
 
     print()
     print('*'*50)
-    print(f'3. Test get {n} recent posts by the {myCommunity}')
+    print(f'2. Test get {n} recent posts by the {myCommunity}')
     print('*'*50)
     print()
 
     # Process the correct result from database
 
-    result=[]
-    i = 0
+    Answer=[]
+    i = len(myDB) - 1
 
-    while i < len(myDB) and len(result) < n:
+    while i > 0 and len(Answer) < n:
         if myDB[i]['Community'] == myCommunity:
-            result.append(myDB[i])
-            i += 1
+            Answer.append(myDB[i])
+            i -= 1
         else:
-            i += 1
+            i -= 1
     
-    print('Correct result from database:\n')
+    print('Correct Answer from database:\n')
+    print(f'Length = {len(Answer)}\n')
+    print('Post:\n')
+    for i in Answer:
+        print(f'{i}\n')
+    
+    
+    print('-'*10 + '\n') # ------------------------
+
+
+    # Process result from the website
+
+    isPassed, result = case_Get_Posts_By_Community(myCommunity, n)
+
+    print('Result from test case\n')
     print(f'Length = {len(result)}\n')
     print('Post:\n')
+    
     for i in result:
         print(f'{i}\n')
-    
-    
-    print('-'*10 + '\n') # ------------------------
-
-
-    # Process result from the website
-
-    isPassed, nPostByCommunity = test_post_by_community(myCommunity, n)
-
-    print('Result from test case\n')
-    print(f'Length = {len(nPostByCommunity)}\n')
-    print('Post:\n')
-    for i in nPostByCommunity:
-        print(f'{i}\n')
 
     print('-'*10 + '\n') # ------------------------
 
     print('Test Result: \n'.upper())
-    if isPassed and (nPostByCommunity == result):
-        print (f'Test Get {n} Posts by community = {myCommunity} is SUCCESS!\n')
+    if isPassed and (result == Answer):
+        print (f'Test Get {n} Posts by time in {myCommunity} is SUCCESSFUL!\n')
     else:
-        print(f'Test Posts at PostID = {testID} is FAILURE!')
+        print (f'Test Get {n} Posts by time in {myCommunity} is FAILURE!')
 
 
+
+
+
+
+    
     # ============================================
-    # 4. TEST GET n POST BY TIME
+    # 3. TEST GET n POST BY TIME
     # ============================================
+    n = 4
 
     print()
     print('*'*50)
-    print(f'4. Test get {n} posts by time')
+    print(f'3. Test get {n} posts by time')
     print('*'*50)
     print()
 
     # Process the correct result from database
 
-    n = 4
-    print('Correct result from database:\n')
+    Answer=[]
+    m = -n
+
+    j = -1
+    while j >= m:
+        Answer.append(myDB[j])
+        j -= 1
+    
+    print('Correct Answer from database:\n')
+    print(f'Length = {len(Answer)}\n')
+    print('Post:\n')
+    for i in Answer:
+        print(f'{i}\n')
+
+    print('-'*10 + '\n') # ------------------------
+
+    # Process result from the website
+    isPassed, result = case_n_Posts_By_Time(n)
+
+    print('Result from test case\n')
     print(f'Length = {len(result)}\n')
     print('Post:\n')
 
-    print('-'*10 + '\n') # ------------------------
-    # Process result from the website
+    for i in result:
+        print(i)
+        print()
 
-
-
-    print('Result from test case\n')
-    print(f'Length = {len(nPostByCommunity)}\n')
-    print('Post:\n')
 
     print('-'*10 + '\n') # ------------------------
 
     print('Test Result: \n'.upper())
 
-    # test_n_post_by_time(4)
+    if isPassed and (result == Answer):
+        print (f'Test Get {n} Posts by time is SUCCESSFUL!\n')
+    else:
+        print (f'Test Get {n} Posts by time is FAILURE!')
 
 
+    # case_n_Posts_By_Time(4)
+
+
+
+
+    # DelID = 10
+    # while DelID <= 19:
+    #     isPassed1 = case_Delete(DelID)
+    #     DelID += 1
     # ============================================
-    # 5. TEST POST 
+    # 4. TEST POST 
     # ============================================
+
+    print()
+    print('*'*50)
+    print(f'4. Test post'.upper())
+    print('*'*50)
+    print()
+
     myJSON = {
         "Username"      : "User 100",
         "PostTitle"     : "Post Title 100",
@@ -461,13 +468,6 @@ def main():
         "Community"     : "Community 100",
         "URLResource"   : "www.URLResource100.com"
     }   
-
-    print()
-    print('*'*50)
-    print(f'5. Test post'.upper())
-    print('*'*50)
-    print()
-
     # ----------------------------------------------
     # Process the correct result from database
     myDB_Before_Post = myDB
@@ -483,8 +483,8 @@ def main():
     # Process result from the website
 
     isPassed1, addJSON = case_Post(**myJSON)
-    isPassed2, retrievedJson = test_post_by_community(myJSON['Community'], 2)
-    tempBool, myDB_After_Post = case_Get_All()
+    isPassed2, retrievedJson = case_Get_Posts_By_Community(myJSON['Community'], 2)
+    tempBool, myDB_After_Post = case_Get_All_Posts()
 
     # print(myJSON['Community'])
     # print('isPassed1 = ', isPassed1)
@@ -515,14 +515,14 @@ def main():
 
 
     # ============================================
-    # 6. TEST DELETE 
+    # 5. TEST DELETE 
     # ============================================
 
-    DelID = 10
+    DelID = 20
 
     print()
     print('*'*50)
-    print(f'4. Test delete posts by PostID = {DelID}')
+    print(f'5. Test delete posts by PostID = {DelID}')
     print('*'*50)
     print()
     # ----------------------------------------------
@@ -540,8 +540,8 @@ def main():
 
     # Process result from the website
     isPassed1 = case_Delete(DelID)
-    isPassed2, retrievedJson = case_Get_ID(DelID)
-    tempBool, myDB_After_Del = case_Get_All()
+    isPassed2, retrievedJson = case_Get_Post_By_ID(DelID)
+    tempBool, myDB_After_Del = case_Get_All_Posts()
 
     # print('isPassed1 = ', isPassed1)
     # print('isPassed2 = ', isPassed2)
@@ -581,8 +581,8 @@ def main():
 
 
 
-    # test_post_by_community('Community_2', 2)
-    # test_n_post_by_time(4)
+    # case_Get_Posts_By_Community('Community_2', 2)
+    # case_n_Posts_By_Time(4)
     # case_Post()
     # case_Delete(10)
 
