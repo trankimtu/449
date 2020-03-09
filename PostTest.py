@@ -298,7 +298,7 @@ def main():
     print('*'*50)
     print()
 
-    # Process the correct result from database
+    # Process the correct answer from database
     Answer1 = []
 
     for i in myDB:
