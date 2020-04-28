@@ -268,8 +268,21 @@ def main():
     # )
     # post = get_post['Item']
     # print('Post result = ', post)
-    post = Get_Post(table_name, dynamodb_resource, 1)
-    print('Post ad PostID 1 = ', post)
+
+    post = Get_Post(table_name, dynamodb_resource, 5)
+    print('Post ad PostID  5 = ', post)
+    post = Get_Post(table_name, dynamodb_resource, 6)
+    print('Post ad PostID  6 = ', post)
+    post = Get_Post(table_name, dynamodb_resource, 7)
+    print('Post ad PostID  7 = ', post)
+    table_length = Table_Length(table_name, dynamodb_resource)
+
+    print(table_length)
+    i = 1
+    while i < table_length + 1:
+        post = Get_Post(table_name, dynamodb_resource, i)
+        print('Post ad PostID  = ', post)
+        i += 1
 
 
 
@@ -381,7 +394,7 @@ def Get_Post(table_name, dynamodb_resource, postID):
         Key = {'PostID':postID}
     )
     post = get_post['Item']
-    print('Post result = ', post)
+    # print('Post result = ', post)
     return post
 
 
