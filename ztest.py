@@ -1,70 +1,125 @@
+# java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+
+
 import boto3
-import __future__ # print_function,  Python 2/3 compatibility
+import datetime
+# from __future__ import print_function # Python 2/3 compatibility
+import __future__  # Python 2/3 compatibility
 
-from flask_dynamo import Dynamo
-# from flask import Flask
-import flask_api
-from flask import request
-from flask_api import status, exceptions
-# import pugsql
+a = 5
+b = 6
+print('a = {} = {}'.format(a, b))
 
+def main():
 
-app = flask_api.FlaskAPI(__name__)
-# # app.config.from_envvar('APP_CONFIG')
-
-table_name = "posts"
+    # Get the service client.
+    dynamodb_client = boto3.client('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
 
 
-# Get the service client.
-dynamodb_client = boto3.client('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
+    # Get the service resource.
+    dynamodb_resource = boto3.resource('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
 
 
-# Get the service resource.
-dynamodb_resource = boto3.resource('dynamodb', region_name='us-west-2', endpoint_url="http://localhost:8000")
+    #=====================================================================
+
+    # list all exist table name
+    # existing_tables = dynamodb_client.list_tables()['TableNames']
+    # print('existing_tables = ', existing_tables)
+    print('\n')
 
 
-
-# app.config['DYNAMO_TABLES'] = myTable
-# dynamo = Dynamo(app)
-
-app.config['DYNAMO_TABLES'] = [
-    dict(
-        TableName=table_name,
-        # TableName='posts',
-        KeySchema=[dict(AttributeName='PostID', KeyType='HASH')],
-        AttributeDefinitions=[dict(AttributeName='PostID', AttributeType='N')],
-        ProvisionedThroughput=dict(ReadCapacityUnits=100, WriteCapacityUnits=100)
-    ), 
- ],
-# queries = pugsql.module('queries/')
-# queries.connect(app.config['DATABASE_URL'])
-print(app.config['DYNAMO_TABLES'])
-
-@app.cli.command('init')
-def init_db():
-    
-    Delete_Table(table_name, dynamodb_resource)
     existing_tables = List_All_Table(dynamodb_client)
 
+    # delete table
+    try:
+        Delete_Table('posts', dynamodb_resource)
+    except:
+        pass
+
+    # delTable = dynamodb_resource.Table('users')
+    # delTable.delete()
+
+    existing_tables = List_All_Table(dynamodb_client)
+
+    #=====================================================================
+
+
+    table_name = 'posts'
+
     if table_name in existing_tables:   # posts table exist -> do nothing
+
         print('posts table is exist')
 
+    
     else:   # create posts table
         print('='*20)
         Create_Table(table_name, dynamodb_client, dynamodb_resource)
+
+        # posts_create_table = dynamodb_client.create_table(
+            
+        #     TableName = table_name,
+
+        #     AttributeDefinitions=[
+        #         {
+        #             'AttributeName': 'PostID',
+        #             'AttributeType': 'N'
+        #         }                        
+        #     ],
+
+        #     KeySchema=[
+        #         {
+        #             'AttributeName': 'PostID',
+        #             'KeyType': 'HASH'
+
+        #         },
+                                    
+        #     ],      #End KeySchema
+
+        #     ProvisionedThroughput = {
+        #         'ReadCapacityUnits': 100,
+        #         'WriteCapacityUnits': 100,
+        #     }
+                        
+
+        # )   # End posts_create_table
+
+        # Wait until the table exists.
+        # posts_create_table.meta.client.get_waiter('table_exists').wait(TableName='posts')
+        # dynamodb_resource.meta.client.get_waiter('table_exists').wait(TableName=table_name)
+        # End else : create posts table
+
+
+
     print('='*20)
+    # posts_Table = dynamodb_resource.Table('posts')
+    # print ("posts table status =  ", posts_Table.table_status)
     Table_Status(table_name, dynamodb_resource)
     print('='*20)
+
+
+    # Print out some data in the table.
+    # posts_Table = dynamodb_resource.Table('posts')
+
+    # table_length = posts_Table.item_count
+    # print('posts table item count = ', table_length)
     table_length = Table_Length(table_name, dynamodb_resource)
 
     print('='*20)
     describeTable = dynamodb_client.describe_table(TableName=table_name)
     print ('describeTable = ', describeTable)
 
+
     print('='*20)
     posts_Table = dynamodb_resource.Table('posts')
     print(posts_Table.creation_date_time)
     print('='*20)
+
+
+    # Scan Table
+    # scanResponse = posts_Table.scan(TableName='posts')
+    # items = scanResponse['Items']
+    # for item in items:
+    #     print(item)
     print('Scan Table')
     Scan_Table (table_name, dynamodb_resource)
 
@@ -206,9 +261,26 @@ def init_db():
 
     input_json = Create_Post (table_name, dynamodb_resource, 'User 100', 'Post Title 100', 'Content 100', 'workplace', 'www.URLResource100.com')
 
+    # print(input_json)
+   
+    # postId = 1
+    # print('posts table item count = ', posts_Table.item_count)
+    # now = datetime.datetime.now()
+    # strNow = str(now)
+
     print('='*20)
     Scan_Table (table_name, dynamodb_resource)
     print('='*20)
+
+    # posts_Table.put_item(Item= input)
+    # print('posts table item count = ', posts_Table.item_count)
+
+    # Getting item
+    # get_post = posts_Table.get_item(
+    #     Key = {'PostID':'1'}
+    # )
+    # post = get_post['Item']
+    # print('Post result = ', post)
 
     post = Get_Post(table_name, dynamodb_resource, 5)
     print('Post ad PostID  5 = ', post)
@@ -234,165 +306,11 @@ def init_db():
 
     Delete_Post(table_name, dynamodb_resource, 100)
     post = Get_Post(table_name, dynamodb_resource, 100)
-    # with app.app_context():
-    #     db = queries._engine.raw_connection()
-    #     with app.open_resource('posts.sql', mode='r') as f:
-    #         db.cursor().executescript(f.read())
-    #     with app.open_resource('votes.sql', mode='r') as f:
-    #         db.cursor().executescript(f.read())
-    #     db.commit()
-
-
-    
-
-
-
-
-
-
-
-
-@app.route('/', methods=['GET'])
-def home():
-    return '''<h1>Post Get Delete ... home page</h1>'''
-    
-
-@app.route('/posts/all', methods=['GET'])
-def all_posts():
-    # all_posts = queries.all_posts()
-    # return list(all_posts)
-    return {'a':'b', 'c':'d'}
-
-# @app.route('/posts/<int:PostID>', methods=['GET'])
-# def post_ID(PostID):
-#     post = queries.post_by_id(PostID=PostID)
-#     if post:
-#         return post
-#     else:
-#         raise exceptions.NotFound()
-# @app.route('/posts', methods=['GET', 'POST'])
-# def n_recent_posts():
-#     if request.method == 'GET':
-#         n = request.args.get('n', 5)
-#         post = queries.n_post_by_time(n=n)
-#         if post:
-#             return list(post)
-#         else:
-#             raise exceptions.NotFound()
-
-#         # return filter_posts(request.args)
-#     elif request.method == 'POST':
-#         return create_post(request.data)
-
-
-# def create_post(post):
-#     required_fields = ['Username', 'PostTitle', 'Content', 'Community', 'URLResource']
-
-#     if not all([field in post for field in required_fields]):
-#         raise exceptions.ParseError()
-#     try:
-#         post['PostID'] = queries.create_post(**post)
-#     except Exception as e:
-#         return { 'error': str(e) }, status.HTTP_409_CONFLICT
-
-#     return post, status.HTTP_201_CREATED, {
-#         'Location': f'/posts/{post["PostID"]}'
-#     }
-
-# def filter_posts(query_parameters):
-#     PostID      = query_parameters.get('PostID')
-#     Username    = query_parameters.get('Username')
-#     PostTitle   = query_parameters.get('PostTitle')
-#     PostDate    = query_parameters.get('PostDate')
-#     Content     = query_parameters.get('Content')
-#     Community   = query_parameters.get('Community')
-#     URLResource = query_parameters.get('URLResource')
-
-
-#     query = "SELECT * FROM posts WHERE"
-#     to_filter = []
-
-#     if PostID:
-#         query += ' PostID=? AND'
-#         to_filter.append(PostID)
-#     if Username:
-#         query += ' Username=? AND'
-#         to_filter.append(Username)
-#     if PostTitle:
-#         query += ' PostTitle=? AND'
-#         to_filter.append(PostTitle)
-#     if PostDate:
-#         query += ' PostDate=? AND'
-#         to_filter.append(PostDate)
-#     if Content:
-#         query += ' Content=? AND'
-#         to_filter.append(Content)
-#     if Community:
-#         query += ' Community=? AND'
-#         to_filter.append(Community)
-#     if URLResource:
-#         query += ' URLResource=? AND'
-#         to_filter.append(URLResource)
-#     if not (PostID or Username or PostTitle or PostDate or Content or Community or URLResource):
-#         raise exceptions.NotFound()
-
-#     query = query[:-4] + ';'
-
-#     results = queries._engine.execute(query, to_filter).fetchall()
-
-#     return list(map(dict, results))
-
-    
-
-
-# @app.route('/posts/delete/<int:PostID>', methods=['GET', 'DELETE'])
-# def delete(PostID):
-#     if request.method == 'DELETE':
-#         delquery = queries.delete_by_id(PostID=PostID)
-
-#         #delquery return number rows of delete
-#         # check if it's 0 or not
-
-
-#         if delquery == 0:
-#             raise exceptions.NotFound()
-#         else:
-#             return '', status.HTTP_204_NO_CONTENT
-#     else:
-#         return {'status': 'OK'}
-
-
-
-
-
-
-
-
-
-# # List the n most recent posts to a particular community
-
-# @app.route('/posts/<string:Community>', methods=['GET'])
-# def post_by_community(Community):
-#     n = request.args.get('n',3)
-#     post = queries.post_by_community(Community=Community,n=n)
-#     if post:
-#         return list(post)
-#     else:
-#         raise exceptions.NotFound()
-
-
-
-
-
-
-# # http://localhost:5000/posts?n=10
-# # http://localhost:5000/posts/Community_3?n=3
-
 
 
 def Create_Table(table_name, dynamodb_client, dynamodb_resource):
     print('Create table')
-    myTable = dynamodb_client.create_table(
+    dynamodb_client.create_table(
             
         TableName = table_name,
 
@@ -421,7 +339,6 @@ def Create_Table(table_name, dynamodb_client, dynamodb_resource):
 
     # Wait until the table exists.
     dynamodb_resource.meta.client.get_waiter('table_exists').wait(TableName=table_name)
-
 
 def Delete_Table(table_name, dynamodb_resource):
     print('Delete table with table name = ', table_name)
@@ -515,7 +432,6 @@ def Get_Post(table_name, dynamodb_resource, postID):
         return post
     except:
         print('Post is not exist')
-
 def Update_Post(table_name, dynamodb_resource, postID, 
                 username, posttitle, content, community, urlresource):
     print('Update post at PostID = ', postID )
@@ -550,3 +466,53 @@ def Delete_Post(table_name, dynamodb_resource, postID):
     myTable.delete_item(
         Key= { 'PostID':postID }
     )
+
+
+main()
+
+
+
+# def Initial_Input_List(currentID):
+#     strCurrentID = str(currentID)
+#     initial_input_list = [
+#         {
+#             'PostID'      : strCurrentID, 
+#             'Username'    : 'User 1',
+#             'PostTitle'   : 'Post Title 1',
+#             'PostDate'    : strNow,
+#             'Content'     : 'Content 1',
+#             'Community'   : 'home',
+#             'URLResource' : 'www.URLResource1.com',
+#         },
+
+#         {
+#             'PostID'      : strCurrentID, 
+#             'Username'    : 'User 1',
+#             'PostTitle'   : 'Post Title 1',
+#             'PostDate'    : strNow,
+#             'Content'     : 'Content 1',
+#             'Community'   : 'home',
+#             'URLResource' : 'www.URLResource1.com',
+#         },
+
+#         {
+#             'PostID'      : strCurrentID, 
+#             'Username'    : 'User 1',
+#             'PostTitle'   : 'Post Title 1',
+#             'PostDate'    : strNow,
+#             'Content'     : 'Content 1',
+#             'Community'   : 'home',
+#             'URLResource' : 'www.URLResource1.com',
+#         },
+
+#         {
+#             'PostID'      : strCurrentID, 
+#             'Username'    : 'User 1',
+#             'PostTitle'   : 'Post Title 1',
+#             'PostDate'    : strNow,
+#             'Content'     : 'Content 1',
+#             'Community'   : 'home',
+#             'URLResource' : 'www.URLResource1.com',
+#         },
+
+#     ]

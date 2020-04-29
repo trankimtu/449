@@ -32,7 +32,7 @@ queries = pugsql.module('queries/')
 queries.connect(app.config['DATABASE_URL'])
 
 
-@app.cli.command('initVote')
+@app.cli.command('init')
 def init_db():
     with app.app_context():
         db = queries._engine.raw_connection()
@@ -51,23 +51,23 @@ def home():
 def all_votes():
     all_votes = queries.all_votes()
 
-    return list(all_votes)
+    return list(all_votes), status.HTTP_200_OK
 
 # view vote by id http://127.0.0.1:5000/api/v1/resources/votebyid/1
 @app.route('/api/v1/resources/votebyid/<int:id>', methods=['GET'])
 def vote_by_id(id):
     vote = queries.vote_by_id(id=id)
     if vote:
-        return vote
+        return vote, status.HTTP_200_OK
     else:
         raise exceptions.NotFound()
 
-# view vote by postid http://127.0.0.1:5000/api/v1/resources/votesbypostid/101
+# view vote by postid http://127.0.0.1:5000/api/v1/resources/votesbypostid/10
 @app.route('/api/v1/resources/votesbypostid/<int:postid>', methods=['GET'])
 def vote_by_postid(postid):
     vote = queries.vote_by_postid(postid=postid)
     if vote:
-        return vote
+        return vote, status.HTTP_200_OK
     else:
         raise exceptions.NotFound()
 
@@ -76,21 +76,22 @@ def vote_by_postid(postid):
 def top_post_score(topscore):
     top = queries.top_post_score(topscore=topscore)
     if top:
-        return list(top)
+        return list(top), status.HTTP_200_OK
     else:
         raise exceptions.NotFound()
 
 # up_vote a post by postID http://127.0.0.1:5000/api/v1/resources/upvote
-@app.route('/api/v1/resources/upvote', methods=['GET', 'PUT'])
+# input ex {"postID": 10}
+@app.route('/api/v1/resources/upvote', methods=['GET', 'POST'])
 def up_votes():
     if request.method == 'GET':
         return filter_votes(request.args)
-    elif request.method == 'PUT':
+        # return up_vote(request.data)
+    elif request.method == 'POST':
         return up_vote(request.data)
 
 def up_vote(vote):
     required_fields = ['postID']
-
     if not all([field in vote for field in required_fields]):
         raise exceptions.ParseError()
     vote_update = queries.up_vote(**vote)
@@ -113,22 +114,24 @@ def filter_votes(query_parameters):
     return list(map(dict, results))
 
 # down_vote a post by postID http://127.0.0.1:5000/api/v1/resources/downvote
-@app.route('/api/v1/resources/downvote', methods=['GET', 'PUT'])
+# input ex {"postID": 11}
+@app.route('/api/v1/resources/downvote', methods=['GET', 'POST'])
 def down_votes():
     if request.method == 'GET':
         return filter_votes(request.args)
-    elif request.method == 'PUT':
+        # return down_vote(request.data)
+    elif request.method == 'POST':
         return down_vote(request.data)
 
 def down_vote(vote):
     required_fields = ['postID']
-
     if not all([field in vote for field in required_fields]):
         raise exceptions.ParseError()
     down_vote_update = queries.down_vote(**vote)
     return filter_votes(vote), status.HTTP_200_OK
 
 # list sorted by score http://127.0.0.1:5000/api/v1/resources/listsortedbyscore
+#input example: {"list": [10, 13, 15]}
 @app.route('/api/v1/resources/listsortedbyscore', methods=['GET', 'POST'])
 def list_sorted():
     if request.method == 'GET':
@@ -138,6 +141,6 @@ def list_sorted():
 
 def list_sorted_by_score(listPostID):
     print(listPostID)
-    list_sorted = queries.list_sorted_by_score(postID=listPostID)
+    list_sorted = queries.list_sorted_by_score(postID=listPostID['listID'])
     return list(list_sorted), status.HTTP_200_OK
 
